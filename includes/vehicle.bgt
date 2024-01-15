@@ -1,0 +1,104 @@
+vehicle@[]vehicles(0);
+class vehicle
+{
+bool fireable, moveable;
+int vehsound, painsound, wepsound;
+double vehhealth;
+double vehmaxhealth;
+int vehx;
+int vehy;
+int vehdir;
+int dammage;
+int vehtime;
+string vehtype;
+timer vehtimer;
+vehicle(int vx,int vy,int dir,double hp,double maxhp,int dm,int sp,string vt,bool vf,bool vm)
+{
+vehx=vx;
+vehy=vy;
+vehdir=dir;
+vehhealth=hp;
+vehmaxhealth=maxhp;
+dammage=dm;
+vehtime=sp;
+vehtype=vt;
+fireable=vf;
+moveable=vm;
+string[] vehsfx=find_files("sounds/objects/vehicles/"+vehtype+"/*loop*");
+if(vehsfx.length()!=0) vehsound=p.play_extended_2d("sounds/objects/vehicles/"+vehtype+"/"+vehsfx[random(0,vehsfx.length()-1)],me.x,me.y,vehx,vehy,0,0,0,0,true,0,0,painvolume,painpitch,false);
+}
+}
+void vehloop()
+{
+for(uint i=0; i<vehicles.length(); i++)
+{
+if(vehicles[i].vehtimer.elapsed>=vehicles[i].vehtime)
+{
+p.update_sound_2d(vehicles[i].vehsound,vehicles[i].vehx,vehicles[i].vehy);
+vehicles[i].vehtimer.restart();
+if (vehicles[i].vehx<=maxx and vehicles[i].vehtimer.elapsed>=vehicles[i].vehtime and vehicles[i].vehdir==1 and vehicles[i].moveable==true and paused==0)
+{
+vehicles[i].vehx++;
+vehicles[i].vehtimer.restart();
+}
+else if (vehicles[i].vehx>=0 and vehicles[i].vehtimer.elapsed>=vehicles[i].vehtime and vehicles[i].vehdir==0 and vehicles[i].moveable==true and paused==0)
+{
+vehicles[i].vehx--;
+vehicles[i].vehtimer.restart();
+}
+if (vehicles[i].vehdir==1 and vehicles[i].vehx>maxx and vehicles[i].moveable==true and paused==0)
+{
+vehicles[i].vehdir=0;
+}
+else if (vehicles[i].vehdir==0 and vehicles[i].vehx<=0 and vehicles[i].moveable==true and paused==0)
+{
+vehicles[i].vehdir=1;
+}
+if(vehicles[i].vehdir==1 and vehicles[i].moveable==true and paused==0)
+{
+vehicles[i].vehx++;
+}
+else if (vehicles[i].vehdir==0 and vehicles[i].moveable==true and paused==0)
+{
+vehicles[i].vehx--;
+}
+if(paused==1)
+{
+p.pause_sound(vehicles[i].vehsound);
+}
+else
+{
+p.resume_sound(vehicles[i].vehsound);
+}
+if(me.x==vehicles[i].vehx and me.y==vehicles[i].vehy and vehicles[i].fireable==true and paused==0)
+{
+string[] hitsfx=find_files("sounds/objects/vehicles/"+vehicles[i].vehtype+"/*hit*");
+if(hitsfx.length()!=0) vehicles[i].wepsound=p.play_stationary_extended("sounds/objects/vehicles/"+vehicles[i].vehtype+"/"+hitsfx[random(0,hitsfx.length()-1)],false,0,0,weaponvolume,weaponpitch,false);
+string[] hurtsfx=find_files("sounds/characters/"+vehicles[i].deathtype+"/*hurt*");
+if(hurtsfx.length()!=0) vehicles[i].painsound=p.play_stationary_extended("sounds/characters/"+vehicles[i].deathtype+"/"+hurtsfx[random(0,hurtsfx.length()-1)],false,0,0,painvolume,painpitch,false);
+if(healthmod>=1) health-=vehicles[i].dammage*healthmod;
+}
+if(vehicles[i].vehhealth<=0)
+{
+p.destroy_sound(vehicles[i].vehsound);
+string[] defsfx=find_files("sounds/objects/vehicles/"+vehicles[i].vehtype+"/*death*");
+if(defsfx.length()!=0) vehicles[i].defsound=p.play_extended_2d("sounds/objects/vehicles/"+vehicles[i].vehtype+"/"+defsfx[random(0,defsfx.length()-1)],me.x,me.y,vehicles[i].vehx,vehicles[i].vehy,0,0,0,0,false,0,0,painvolume,painpitch,false);
+vehicles.remove_at(i);
+return;
+}
+}
+}
+}
+void spawn_vehicle(int x,int y,double hp,double maxhp,int dm,string vehtype,bool fireable,bool moveable)
+{
+vehicle v1(x,y,hp,maxhp,dm,vehtype,fireable,moveable);
+vehicles.insert_last(v1);
+}
+void destroy_all_vehicles()
+{
+for(uint i=0; i<vehicles.length(); i++)
+{
+p.destroy_sound(vehicles[i].vehsound);
+}
+vehicles.resize(0);
+}

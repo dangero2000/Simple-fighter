@@ -1,0 +1,50 @@
+obj@[]objs(0);
+class obj{
+;int getsound, loopsound;
+int itx;
+int ity;
+int beeptime;
+int timeout;
+string objtype;
+timer beeptimer, timeout_timer;
+obj(int ix,int iy,int to,string ty)
+{
+itx=ix;
+ity=iy;
+timeout=to;
+objtype=ty;
+}
+}
+void objloop()
+{
+for(uint i=0; i<objs.length(); i++)
+{
+if(objs[i].beeptimer.elapsed>=500)
+{
+string[] objsfx=find_files("sounds/characters/items/unsorted/"+objs[i].objtype+"/*loop*");
+if(objsfx.length()!=0) objs[i].loopsound=p.play_extended_2d("sounds/characters/items/unsorted/"+objs[i].objtype+"/"+objsfx[random(0,objsfx.length()-1)],me.x,me.y,objs[i].itx,objs[i].ity,0,0,0,0,false,0,0,itemvolume,itempitch,false);
+objs[i].beeptimer.restart();
+}
+if(objs[i].timeout_timer.elapsed>objs[i].timeout)
+{
+p.destroy_sound(objs[i].loopsound);
+objs.remove_at(i);
+return;
+}
+if(me.x==objs[i].itx and me.y==objs[i].ity)
+{
+//p.destroy_sound(objs[i].loopsound);
+string[] getsfx=find_files("sounds/characters/items/unsorted/"+objs[i].objtype+"/*get*");
+if(getsfx.length()!=0) objs[i].getsound=p.play_stationary_extended("sounds/characters/items/unsorted/"+objs[i].objtype+"/"+getsfx[random(0,getsfx.length()-1)],false,0,0,itemvolume,itempitch,false);
+give(objs[i].objtype,1);
+speak(objs[i].objtype);
+objs.remove_at(i);
+return;
+}
+}
+}
+void spawn_obj(int x,int y,int timeout,string objtype)
+{
+obj o1(x,y,timeout,objtype);
+objs.insert_last(o1);
+}

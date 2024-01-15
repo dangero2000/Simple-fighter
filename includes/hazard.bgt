@@ -1,0 +1,59 @@
+hazard@[]hazards(0);
+class hazard{
+double minx, maxx, miny, maxy;
+int hazardsound, wepsound;
+bool triggered;
+string hazardtype;
+hazard(double mx,double mx2,double my,double my2,string hztype)
+{
+minx=mx;
+maxx=mx2;
+miny=my;
+maxy=my2;
+hazardtype=hztype;
+string[] hadsfx=find_files("sounds/objects/hazards/"+hazardtype+"/*loop*");
+if(hadsfx.length()!=0) hazardsound=p.play_extended_2d("sounds/objects/hazards/"+hazardtype+"/"+hadsfx[random(0,hadsfx.length()-1)],me.x,me.y,minx,miny,0,0,0,0,true,0,0,painvolume,painpitch,false);
+}
+}
+hazard@is_hazard_here(double x,double y){
+hazard@h=null;
+for(uint i=0; i<hazards.length(); i++)
+{
+if(hazards[i].triggered) continue;
+if(hazards[i].minx<=x&&hazards[i].maxx>=x&&hazards[i].miny<=y&&hazards[i].maxy>=y)
+{
+@h=hazards[i];
+}
+}
+return h;
+}
+void hazardcheck()
+{
+for(uint i=0; i<hazards.length(); i++)
+{
+hazard@temp=is_hazard_here(me.x,me.y);
+if(@temp==null) return;
+if(me.y>=temp.miny)
+{
+temp.triggered=true;
+p.destroy_sound(hazards[i].hazardsound);
+string[] fallsfx=find_files("sounds/objects/hazards/"+hazards[i].hazardtype+"/*fall*");
+if(fallsfx.length()!=0) hazards[i].wepsound=p.play_extended_2d("sounds/objects/hazards/"+hazards[i].hazardtype+"/"+fallsfx[random(0,fallsfx.length()-1)],me.x,me.y,hazards[i].minx,hazards[i].miny,0,0,0,0,false,0,0,weaponvolume,weaponpitch,false);
+health=1;
+hazards.remove_at(i);
+return;
+}
+}
+}
+void spawn_hazard(int minx,int maxx,int miny,int maxy,string hztype)
+{
+hazards.insert_last(hazard(minx,maxx,miny,maxy,hztype));
+}
+void destroy_all_hazards()
+{
+for(uint i=0; i<hazards.length(); i++)
+{
+p.destroy_sound(hazards[i].hazardsound);
+}
+hazards.resize(0);
+}

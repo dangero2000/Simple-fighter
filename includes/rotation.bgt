@@ -1,0 +1,20 @@
+void face_left()
+{
+if(facing=="left"==false and turnable==true)
+{
+facing="left";
+if(spokenturns==1) speak(facing);
+string[] turnsfx=find_files("sounds/characters/turns/"+turntype+"/*turn*");
+if(turnsound==1) p.play_stationary("sounds/characters/turns/"+turntype+"/"+turnsfx[random(0,turnsfx.length()-1)],false);
+}
+}
+void face_right()
+{
+if(facing=="right"==false and turnable==true)
+{
+facing="right";
+if(spokenturns==1) speak(facing);
+string[] turnsfx=find_files("sounds/characters/turns/"+turntype+"/*turn*");
+if(turnsound==1) p.play_stationary("sounds/characters/turns/"+turntype+"/"+turnsfx[random(0,turnsfx.length()-1)],false);
+}
+}

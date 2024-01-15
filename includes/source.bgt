@@ -1,0 +1,94 @@
+source@[] sources(0);
+class source
+{
+int source_sound;
+int lx;
+int rx;
+int miny;
+int maxy;
+string soundfile;
+int volume;
+int pitch;
+bool paused=false;
+int id=-1;
+bool p2;
+source(int source_lx, int source_rx, int source_miny, int source_maxy, string file, int vol, int semitone, bool source_paused=false, int source_id=-1)
+{
+lx=source_lx;
+rx = source_rx;
+miny=source_miny;
+maxy= source_maxy;
+soundfile=file;
+volume=vol;
+pitch=semitone;
+paused=source_paused;
+id=source_id;
+source_sound=p.play_extended_2d(soundfile, me.x, me.y, lx, miny, 0, 0, 0, 0, true, 0, 0, volume, pitch, false);
+p.update_sound_2d(source_sound, lx, miny);
+if(paused==true)
+{
+p.pause_sound(source_sound);
+}
+p2=paused;
+p.update_sound_range_2d(source_sound, 0, rx-lx, 0, maxy-miny);
+}
+}
+void sorceloop()
+{
+for (uint i=0; i<sources.length(); i++)
+{
+if(sources[i].paused!=sources[i].p2)
+{
+if(sources[i].paused==true and sources[i].p2==false)
+{
+p.pause_sound(sources[i].source_sound);
+sources[i].p2=true;
+}
+else if(sources[i].paused==false and sources[i].p2==true)
+{
+p.resume_sound(sources[i].source_sound);
+sources[i].p2=false;
+}
+}
+}
+}
+void spawn_source(int source_lx, int source_rx, int source_miny, int source_maxy, string soundfile, int soundvol, int soundpitch, bool paused=false, int id=-1)
+{
+source source1(source_lx, source_rx, source_miny, source_maxy, soundfile, soundvol, soundpitch, paused, id);
+sources.insert_last(source1);
+}
+void pause_all_sources()
+{
+for(uint i=0; i<sources.length(); i++)
+{
+p.pause_sound(sources[i].source_sound);
+sources[i].paused=true;
+}
+}
+void resume_all_sources()
+{
+for(uint i=0; i<sources.length(); i++)
+{
+p.resume_sound(sources[i].source_sound);
+sources[i].paused=false;
+}
+}
+void destroy_source(int id)
+{
+for(uint i=0; i<sources.length(); i++)
+{
+if(sources[i].id==id and id > -1)
+{
+p.destroy_sound(sources[i].source_sound);
+sources.remove_at(i);
+}
+}
+}
+void destroy_all_sources()
+{
+for(uint i=0; i<sources.length(); i++)
+{
+p.destroy_sound(sources[i].source_sound);
+sources.resize(0);
+}
+}

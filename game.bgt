@@ -1,0 +1,101 @@
+#include"includes/includes.bgt"
+int keytime=200, spacehold=1;
+string[] dock, dock2, dock3;
+string docksplit, changesplit, credsplit;
+string mapname;
+string loc;
+string newloc;
+file docks, docks2, docks3;
+timer keytimer;
+dynamic_menu_pro m;
+savedata sd("data/game.dat","s7NGuz4iSPGvdCy52bDekJezFp23WcBoeMdlY8Mk9d7Zj51dD8LiDqhYN6bveBODZS1Yt6m1pMOBdRi9e8DLmPBPRPLlW2xFA1rjNdJAugeNL7v6Fcnl1F7rp1hdjSCwYzw34cOtL");
+savedata st("data/options.dat","mBlAGtFL8GUjFZDAaLkG6Zqv1KHKOimA3SGqT6wmdJWc5h6RdSB97916D9SIQfZMjdCZMSJmDByZHYuS2V22QCvHmSGMHIOSwIyHjD46zmjGcm3bgZRyImIAVLivGTgAHub0jpjORA2t3z1GJMcHu0VxMIbJrmSzXjU9wdgeZYdP8z7MVym8SBrGrb2X8r9ryXY03MhwzMgjdD6jo9q");
+sound_pool p;
+text_input input;
+time_elapsed timeelapsed;
+void main()
+{
+if(!screen_reader_set_library_path(NVDA,"lib/nvdaControllerClient32.dll"))
+{
+alert("Error", "There was a problem interacting with the NVDA screen reader.");
+exit();
+}
+timeelapsed.set_timer(gametimer);
+p.max_distance=0;
+p.pan_step=2.5;
+p.volume_step=2.5;
+show_game_window("game");
+readdata();
+readpreffs();
+mainmenu();
+}
+void destroygame()
+{
+destroy_all_animals();
+destroy_all_enemies();
+destroy_all_projectiles();
+destroy_all_robots();
+destroy_all_zombies();
+}
+void resetgame()
+{
+aninum=1;
+eninum=1;
+projnum=1;
+robnum=1;
+zombnum=1;
+objnum=1;
+ammo=100;
+maxammo=100;
+health=100;
+maxhealth=100;
+shieldstrength=100;
+maxshieldstrength=100;
+lifecard=1;
+me.x=0;
+me.y=0;
+maxx=100;
+maxy=100;
+kills=0;
+level=1;
+points=0;
+xp=0;
+xprequiered=1;
+facing="left";
+jumptype="jump25";
+paintype="cg5";
+turntype="turn7";
+platile="short grass";
+shieldtype="large shield";
+walltile="grass2";
+}
+void resetpreffs()
+{
+keytime=200;
+spacehold=1;
+up_down=0;
+left_right=1;
+home_end=1;
+wrap=1;
+repeat_items=1;
+numbers=0;
+first_letter=1;
+position_info=0;
+side_scroll=0;
+clicksound="menuclick";
+edgesound="menuedge";
+entersound="menuenter";
+opensound="menuopen";
+wrapsound="menuwrap";
+}
+void restart()
+{
+if(SCRIPT_COMPILED)
+{
+run("game.exe","",false,false);
+}
+else
+{
+run("C:\\Program Files (x86)\\BGT\\bgt.exe","game.bgt",false,false);
+}
+}

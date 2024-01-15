@@ -1,0 +1,113 @@
+int invpos;
+dictionary inv;
+void give(string item, int amount)
+{
+int a;
+if (!inv.exists(item))
+{
+inv.set(item,amount);
+}
+else
+{
+inv.get(item,a);
+if (a+amount<=0)
+inv.delete(item);
+else
+inv.set(item,a+amount);
+}
+}
+void cycle_inv(int dir)
+{
+if (dir==1)
+invpos+=1;
+else
+invpos-=1;
+if (invpos>=inv.get_size())
+{
+invpos=0;
+}
+else if (invpos<0)
+{
+invpos=inv.get_size()-1;
+}
+if (inv.get_size()==0)
+{
+speak("empty");
+}
+else
+{
+int a;
+inv.get(inv.get_keys()[invpos],a);
+if(a==1)
+speak(string_replace(inv.get_keys()[invpos],"_"," ",true)+". Item "+(invpos+1)+" of "+inv.get_keys().length);
+else
+speak(string_replace(inv.get_keys()[invpos], "_", " ", true)+"s, "+a+". Item "+(invpos+1)+" of "+inv.get_keys().length);
+}
+}
+void useitem(string current)
+{
+string[] objtype=find_directories("sounds/characters/items/unsorted/*");
+for(uint i=0; i<objtype.length(); i++)
+{
+if (inv.get_size()<=0)
+{
+speak("No items");
+}
+else
+{
+current=inv.get_keys()[invpos];
+if(current==objtype[i] and health<maxhealth)
+{
+string[] firesfx=find_files("sounds/characters/items/unsorted/"+objtype[i]+"/*fire*");
+if(firesfx.length()!=0 and firesound==1) itemslot=p.play_stationary_extended("sounds/characters/items/unsorted/"+objtype[i]+"/"+firesfx[random(0,firesfx.length()-1)],false,0,0,itemvolume,itempitch,false);
+string[] hitsfx=find_files("sounds/characters/items/unsorted/"+objtype[i]+"/*hit*");
+if(hitsfx.length()!=0 and hitsound==1) itemslot=p.play_stationary_extended("sounds/characters/items/unsorted/"+objtype[i]+"/"+hitsfx[random(0,hitsfx.length()-1)],false,0,0,itemvolume,itempitch,false);
+if(healthmod>=1) health+=1*healthmod;
+give(objtype[i],-1);
+speak(objtype[i]+";"+"recycled");
+return;
+}
+if(current==objtype[i] and health>=maxhealth)
+{
+speak("You don't need to use this!");
+return;
+}
+}
+}
+}
+int count_total_items()
+{
+int amount=0;
+for (uint i=0; i<inv.get_keys().length(); i++)
+{
+int a;
+inv.get(inv.get_keys()[i],a);
+amount+=a;
+}
+return amount;
+}
+string getitem()
+{
+if (inv.get_size()<=0)
+{
+return "";
+}
+else
+{
+string current=inv.get_keys()[invpos];
+return current;
+}
+}
+int item_exists(string item)
+{
+string[] current=inv.get_keys();
+int index=current.find(item);
+if (index>-1)
+{
+int ab;
+inv.get(current[index],ab);
+return ab;
+}
+else
+return -1;
+}

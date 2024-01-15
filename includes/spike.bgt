@@ -1,0 +1,62 @@
+spike@[]spikes(0);
+class spike
+{
+int spikesound, painsound, wepsound;
+int spikex;
+int spikey;
+int dammage;
+int firetime=spiketime;
+int spiketime;
+string deathtype="cg6";
+string spiketype;
+timer firetimer, 	spiketimer;
+spike(int sx,int sy,int dm,int sp,string st)
+{
+spikex=sx;
+spikey=sy;
+dammage=dm;
+spiketime=sp;
+spiketype=st;
+}
+}
+void spikeloop()
+{
+for(uint i=0; i<spikes.length(); i++)
+{
+if(spikes[i].spiketimer.elapsed>=spikes[i].spiketime)
+{
+string[] spikesfx=find_files("sounds/objects/spikes/"+spikes[i].spiketype+"/*loop*");
+if(spikesfx.length()!=0) spikes[i].spikesound=p.play_extended_2d("sounds/objects/spikes/"+spikes[i].spiketype+"/"+spikesfx[random(0,spikesfx.length()-1)],me.x,me.y,spikes[i].spikex,spikes[i].spikey,0,0,0,0,false,0,0,painvolume,painpitch,false);
+spikes[i].spiketimer.restart();
+}
+if(me.x==spikes[i].spikex and me.y==spikes[i].spikey and spikes[i].firetimer.elapsed>=spikes[i].firetime and shieldon==1 and shieldstrength<=maxshieldstrength and paused==0)
+{
+string[] arqsfx=find_files("sounds/characters/shields/"+shieldtype+"/*hit*");
+if(arqsfx.length()!=0 and shieldsound==1) shieldslot=p.play_stationary_extended("sounds/characters/shields/"+shieldtype+"/"+arqsfx[random(0,arqsfx.length()-1)],false,0,0,shieldvolume,shieldpitch,false);
+shieldstrength-=spikes[i].dammage*shieldmod;
+spikes[i].firetimer.restart();
+}
+else if(me.x==spikes[i].spikex and me.y==spikes[i].spikey and spikes[i].firetimer.elapsed>=spikes[i].firetime and shieldon==0 and paused==0)
+{
+string[] hitsfx=find_files("sounds/objects/spikes/"+spikes[i].spiketype+"/*hit*");
+if(hitsfx.length()!=0) spikes[i].wepsound=p.play_stationary_extended("sounds/objects/spikes/"+spikes[i].spiketype+"/"+hitsfx[random(0,hitsfx.length()-1)],false,0,0,weaponvolume,weaponpitch,false);
+string[] hurtsfx=find_files("sounds/characters/"+spikes[i].deathtype+"/*hurt*");
+if(hurtsfx.length()!=0) spikes[i].painsound=p.play_stationary_extended("sounds/characters/"+spikes[i].deathtype+"/"+hurtsfx[random(0,hurtsfx.length()-1)],false,0,0,painvolume,painpitch,false);
+if(healthmod>=1) health-=spikes[i].dammage*healthmod;
+spikes[i].firetimer.restart();
+}
+}
+}
+void spawn_spike(int x,int y,int dammage,int spiketime,string spiketype)
+{
+spike s1(x,y,dammage,spiketime,spiketype);
+spikes.insert_last(s1);
+}
+void destroy_all_spikes()
+{
+for(uint i=0; i<spikes.length(); i++)
+{
+p.destroy_sound(spikes[i].spikesound);
+}
+spikes.resize(0);
+}

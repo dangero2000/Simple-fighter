@@ -1,0 +1,128 @@
+projectile@[]projectiles(0);
+class projectile
+{
+bool fireable, moveable;
+int defsound, projsound, painsound, wepsound;
+int projcard;
+int projehealth;
+double projhealth;
+double projmaxhealth;
+int prox;
+int proy;
+int projdir;
+int dammage;
+int firetime=projtime;
+int projtime;
+string projtype;
+timer firetimer, projtimer;
+projectile(int px,int py,int dir,double hp,double maxhp,int pc,int dm,int sp,string pt,bool pf,bool pm)
+{
+this.projehealth=hp;
+prox=px;
+proy=py;
+projdir=dir;
+projhealth=hp;
+projmaxhealth=maxhp;
+projcard=pc;
+dammage=dm;
+projtime=sp;
+projtype=pt;
+fireable=pf;
+moveable=pm;
+string[] prosfx=find_files("sounds/npc/projectiles/"+projtype+"/*loop*");
+if(prosfx.length()!=0) projsound=p.play_extended_2d("sounds/npc/projectiles/"+projtype+"/"+prosfx[random(0,prosfx.length()-1)],me.x,me.y,prox,proy,0,0,0,0,true,0,0,painvolume,painpitch,false);
+}
+}
+void projloop()
+{
+for(uint i=0; i<projectiles.length(); i++)
+{
+if(projectiles[i].projtimer.elapsed>=projectiles[i].projtime)
+{
+p.update_sound_2d(projectiles[i].projsound,projectiles[i].prox,projectiles[i].proy);
+projectiles[i].projtimer.restart();
+if (projectiles[i].prox<=maxx and projectiles[i].projtimer.elapsed>=projectiles[i].projtime and projectiles[i].projdir==1 and projectiles[i].moveable==true and paused==0)
+{
+projectiles[i].prox++;
+projectiles[i].projtimer.restart();
+}
+else if (projectiles[i].prox>=0 and projectiles[i].projtimer.elapsed>=projectiles[i].projtime and projectiles[i].projdir==0 and projectiles[i].moveable==true and paused==0)
+{
+projectiles[i].prox--;
+projectiles[i].projtimer.restart();
+}
+if (projectiles[i].projdir==1 and projectiles[i].prox>maxx and projectiles[i].moveable==true and paused==0)
+{
+projectiles[i].projdir=0;
+}
+else if (projectiles[i].projdir==0 and projectiles[i].prox<=0 and projectiles[i].moveable==true and paused==0)
+{
+projectiles[i].projdir=1;
+}
+if(projectiles[i].projdir==1 and projectiles[i].moveable==true and paused==0)
+{
+projectiles[i].prox++;
+}
+else if (projectiles[i].projdir==0 and projectiles[i].moveable==true and paused==0)
+{
+projectiles[i].prox--;
+}
+if(paused==1)
+{
+p.pause_sound(projectiles[i].projsound);
+}
+else
+{
+p.resume_sound(projectiles[i].projsound);
+}
+if(me.x==projectiles[i].prox and me.y==projectiles[i].proy and projectiles[i].firetimer.elapsed>=projectiles[i].firetime and projectiles[i].fireable==true and shieldon==1 and shieldstrength<=maxshieldstrength and paused==0)
+{
+string[] arqsfx=find_files("sounds/characters/shields/"+shieldtype+"/*hit*");
+if(arqsfx.length()!=0 and shieldsound==1) shieldslot=p.play_stationary_extended("sounds/characters/shields/"+shieldtype+"/"+arqsfx[random(0,arqsfx.length()-1)],false,0,0,shieldvolume,shieldpitch,false);
+shieldstrength-=projectiles[i].dammage*shieldmod;
+projectiles[i].firetimer.restart();
+}
+else if(me.x==projectiles[i].prox and me.y==projectiles[i].proy and projectiles[i].firetimer.elapsed>=projectiles[i].firetime and projectiles[i].fireable==true and shieldon==0 and paused==0)
+{
+string[] hitsfx=find_files("sounds/npc/projectiles/"+projectiles[i].projtype+"/*hit*");
+if(hitsfx.length()!=0) projectiles[i].wepsound=p.play_stationary_extended("sounds/npc/projectiles/"+projectiles[i].projtype+"/"+hitsfx[random(0,hitsfx.length()-1)],false,0,0,weaponvolume,weaponpitch,false);
+string[] hurtsfx=find_files("sounds/characters/pains/"+paintype+"/*hurt*");
+if(hurtsfx.length()!=0) projectiles[i].painsound=p.play_stationary_extended("sounds/characters/pains/"+paintype+"/"+hurtsfx[random(0,hurtsfx.length()-1)],false,0,0,painvolume,painpitch,false);
+if(healthmod>=1) health-=projectiles[i].dammage*healthmod;
+projectiles[i].firetimer.restart();
+}
+if(projectiles[i].projhealth<=0)
+{
+if(projectiles[i].projcard>=2 and paused==0)
+{
+p.play_2d("sounds/misc/deathfree.ogg", me.x, me.y, projectiles[i].prox, projectiles[i].proy, false);
+projectiles[i].projhealth=projectiles[i].projehealth;
+projectiles[i].projcard-=1;
+}
+else if(projectiles[i].projcard<=1 and paused==0)
+{
+p.destroy_sound(projectiles[i].projsound);
+string[] defsfx=find_files("sounds/npc/projectiles/"+projectiles[i].projtype+"/*death*");
+if(defsfx.length()!=0) projectiles[i].defsound=p.play_extended_2d("sounds/npc/projectiles/"+projectiles[i].projtype+"/"+defsfx[random(0,defsfx.length()-1)],me.x,me.y,projectiles[i].prox,projectiles[i].proy,0,0,0,0,false,0,0,painvolume,painpitch,false);
+if(xpmod>=1) xp+=1*xpmod;
+kills+=1;
+projectiles.remove_at(i);
+return;
+}
+}
+}
+}
+}
+void spawn_projectile(int x,int y,int dir,double hp,double maxhp,int pc,int dm,int projtime,string projtype,bool fireable,bool moveable)
+{
+projectile p1(x,y,dir,hp,maxhp,pc,dm,projtime,projtype,fireable,moveable);
+projectiles.insert_last(p1);
+}
+void destroy_all_projectiles()
+{
+for(uint i=0; i<projectiles.length(); i++)
+{
+p.destroy_sound(projectiles[i].projsound);
+}
+projectiles.resize(0);
+}

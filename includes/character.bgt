@@ -1,0 +1,63 @@
+void sit_down()
+{
+if(sittable==true and stuntimer.elapsed>=stuntime)
+{
+if(keyrowhold==1)
+{
+if(jumpable==true and moveable==true and turnable==true and sitting==false)
+{
+if(sitsound==1) p.play_stationary("sounds/misc/sit.ogg",false);
+wait(500);
+if(tilename!="hardland")
+{
+string [] tilers=find_files("sounds/objects/platforms/"+platile+"/*hardland*");
+if(tilers.length()!=0) tilename=tilers[random(0,tilers.length()-1)];
+if(tilers.length()!=0) tileslot=p.play_stationary_extended("sounds/objects/platforms/"+platile+"/"+tilename,false,0,0,tilevolume,tilepitch);
+jumpable=false;
+moveable=false;
+turnable=false;
+sitting=true;
+stuntimer.restart();
+}
+}
+}
+}
+}
+void stand_up()
+{
+if(sittable==true and stuntimer.elapsed>=stuntime)
+{
+if(standsound==1) p.play_stationary("sounds/misc/stand.ogg",false);
+jumpable=true;
+moveable=true;
+turnable=true;
+sitting=false;
+stuntimer.restart();
+}
+else if(keyrowhold==0)
+{
+if(jumpable==true and moveable==true and sitting==false)
+{
+if(sitsound==1) p.play_stationary("sounds/misc/sit.ogg",false);
+wait(500);
+if(tilename!="hardland")
+{
+string [] tilers=find_files("sounds/objects/platforms/"+platile+"/*hardland*");
+if(tilers.length()!=0) tilename=tilers[random(0,tilers.length()-1)];
+if(tilers.length()!=0) tileslot=p.play_stationary_extended("sounds/objects/platforms/"+platile+"/"+tilename,false,0,0,tilevolume,tilepitch);
+jumpable=false;
+moveable=false;
+sitting=true;
+stuntimer.restart();
+}
+}
+else
+{
+if(standsound==1) p.play_stationary("sounds/misc/stand.ogg",false);
+jumpable=true;
+moveable=true;
+sitting=false;
+stuntimer.restart();
+}
+}
+}

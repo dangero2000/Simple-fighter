@@ -1,0 +1,46 @@
+sign@[]signs(0);
+class sign
+{
+double x,y;
+string text;
+int signloop;
+sign(double snx,double sny,string sntext)
+{
+x=snx;
+y=sny;
+text=sntext;
+signloop=p.play_2d("sign.ogg",me.x,me.y,x,y,true);
+}
+}
+void signcheck()
+{
+for(uint i=0; i<signs.length(); i++)
+{
+if(signs[i].x==me.x and signs[i].y==me.y and key_pressed(KEY_RETURN))
+{
+p.play_stationary("signpress.ogg",false);
+speak(signs[i].text);
+}
+}
+}
+void spawn_sign(double x,double y,string text)
+{
+sign sign1(x,y,text);
+signs.insert_last(sign1);
+}
+bool is_sign(double x,double y)
+{
+for(uint i=0; i<signs.length(); i++)
+{
+if(signs[i].x==x and signs[i].y==y) return true;
+}
+return false;
+}
+void destroy_all_signs()
+{
+for(uint i=0; i<signs.length(); i++)
+{
+p.destroy_sound(signs[i].signloop);
+}
+signs.resize(0);
+}

@@ -1,0 +1,770 @@
+void mainmenu()
+{
+setupmenu(true);
+m.add_item_tts("documentation menu", "help");
+m.add_item_tts("game menu", "shoot");
+m.add_item_tts("settings menu", "settings");
+m.add_item_tts("test speakers", "st");
+m.add_item_tts("restart", "rx");
+m.add_item_tts("exit", "ex");
+int mres=m.run("Main menu. Please choose an option with your arrow keys, then press enter to activate one.",true);
+string main=m.get_item_name(mres);
+if(mres==0)
+{
+speak("exiting");
+wait(500);
+exit();
+}
+if(main=="shoot")
+{
+gamemenu();
+}
+if(main=="help")
+{
+docksmenu();
+}
+if(main=="st")
+{
+wait(500);
+dlgplay("sounds/misc/speakertest.ogg", true, true, 30);
+mainmenu();
+}
+if(main=="ex")
+{
+speak("exiting");
+wait(500);
+exit();
+}
+if(main=="rx")
+{
+speak("restarting");
+wait(500);
+restart();
+}
+if(main=="settings")
+{
+settingsmenu();
+}
+}
+void docksmenu()
+{
+setupmenu(true);
+m.add_item_tts("changelog", "changelog");
+m.add_item_tts("credits", "credits");
+m.add_item_tts("readme", "readme");
+m.add_item_tts("back", "back");
+int mres=m.run("Documentation menu",true);
+string dnm=m.get_item_name(mres);
+if(mres==0)
+{
+mainmenu();
+}
+if(dnm=="changelog")
+{
+docks.open("docks/changelog.txt","r");
+changesplit=docks.read();
+dock=string_split(changesplit,"\r\n",false);
+setupmenu2(true);
+for(uint i=0; i<dock.length(); i++)
+{
+m.add_item_tts(dock[i],"","",false);
+}
+int mres=m.run("Changelog", true);
+if(mres==0)
+{
+docksmenu();
+}
+if (mres==0 and mres>=dock.length())
+{
+return;
+}
+if (mres>0 and mres<=dock.length())
+{
+return;
+}
+}
+if(dnm=="credits")
+{
+docks2.open("docks/credits.txt","r");
+credsplit=docks2.read();
+dock2=string_split(credsplit,"\r\n",false);
+setupmenu2(true);
+for(uint i=0; i<dock2.length(); i++)
+{
+m.add_item_tts(dock2[i],"","",false);
+}
+int mres=m.run("Credits", true);
+if(mres==0)
+{
+docksmenu();
+}
+if (mres==0 and mres>=dock2.length())
+{
+return;
+}
+if (mres>0 and mres<=dock2.length())
+{
+return;
+}
+}
+if(dnm=="readme")
+{
+docks3.open("docks/readme.txt", "r");
+docksplit=docks3.read();
+dock3=string_split(docksplit,"\r\n",false);
+setupmenu2(true);
+for(uint i=0; i<dock3.length(); i++)
+{
+m.add_item_tts(dock3[i],"","",false);
+}
+int mres=m.run("Readme", true);
+if(mres==0)
+{
+docksmenu();
+}
+if (mres==0 and mres>=dock3.length())
+{
+return;
+}
+if (mres>0 and mres<=dock3.length())
+{
+return;
+}
+}
+if(dnm=="back")
+{
+mainmenu();
+}
+}
+void settingsmenu()
+{
+setupmenu(true);
+m.add_item_tts("select menu sounds", "slm");
+if(up_down==0)
+m.add_item_tts("enable up and down in menus", "pd");
+else
+m.add_item_tts("disable up and down in menus", "pd");
+if(left_right==0)
+m.add_item_tts("enable left and right in menus", "lr");
+else
+m.add_item_tts("disable left and right in menus", "lr");
+if(home_end==0)
+m.add_item_tts("enable home and end in menus", "hd");
+else
+m.add_item_tts("disable home and end in menus", "hd");
+if(wrap==0)
+m.add_item_tts("enable wrapping in menus", "rg");
+else
+m.add_item_tts("disable wrapping in menus", "rg");
+if(repeat_items==0)
+m.add_item_tts("enable repeating items in menus", "rms");
+else
+m.add_item_tts("disable repeating items in menus", "rms");
+if(numbers==0)
+m.add_item_tts("enable number scrolling in menus", "nbs");
+else
+m.add_item_tts("disable number scrolling in menus", "nbs");
+if(first_letter==0)
+m.add_item_tts("enable first letter scrolling in menus", "fls");
+else
+m.add_item_tts("disable first letter scrolling in menus", "fls");
+if(position_info==0)
+m.add_item_tts("enable position information in menus", "psn");
+else
+m.add_item_tts("disable position information in menus", "psn");
+if(side_scroll==0)
+m.add_item_tts("enable side scrolling in menus", "psl");
+else
+m.add_item_tts("disable side scrolling in menus", "psl");
+m.add_item_tts("reset settings", "rest");
+m.add_item_tts("save settings", "preffs");
+m.add_item_tts("back", "back");
+int mres=m.run("Settings menu",true);
+string ssm=m.get_item_name(mres);
+if(mres==0)
+{
+mainmenu();
+}
+if(ssm=="slm")
+{
+menusounds();
+}
+if(ssm=="pd")
+{
+if(up_down==0)
+{
+up_down=1;
+speak("up and down in menus enabled");
+}
+else
+{
+m.enable_up_and_down=false;
+up_down=0;
+speak("up and down in menus disabled");
+}
+settingsmenu();
+}
+if(ssm=="lr")
+{
+if(left_right==0)
+{
+left_right=1;
+speak("left and right in menus enabled");
+}
+else
+{
+m.enable_left_and_right=false;
+left_right=0;
+speak("left and right in menus disabled");
+}
+settingsmenu();
+}
+if(ssm=="hd")
+{
+if(home_end==0)
+{
+home_end=1;
+speak("home and end in menus enabled");
+}
+else
+{
+m.enable_home_and_end=false;
+home_end=0;
+speak("home and end in menus disabled");
+}
+settingsmenu();
+}
+if(ssm=="rg")
+{
+if(wrap==0)
+{
+wrap=1;
+speak("wrapping in menus enabled");
+}
+else
+{
+m.wrap=false;
+wrap=0;
+speak("wrapping in menus disabled");
+}
+settingsmenu();
+}
+if(ssm=="rms")
+{
+if(repeat_items==0)
+{
+repeat_items=1;
+speak("repeating items in menus enabled");
+}
+else
+{
+m.repeat_items_at_edges=false;
+repeat_items=0;
+speak("repeating items in menus disabled");
+}
+settingsmenu();
+}
+if(ssm=="nbs")
+{
+if(numbers==0)
+{
+numbers=1;
+speak("number scrolling in menus enabled");
+}
+else
+{
+m.enable_numbers=false;
+numbers=0;
+speak("number scrolling in menus disabled");
+}
+settingsmenu();
+}
+if(ssm=="fls")
+{
+if(first_letter==0)
+{
+first_letter=1;
+speak("first letter scrolling in menus enabled");
+}
+else
+{
+m.enable_first_letter_navigation=false;
+first_letter=0;
+speak("first letter scrolling in menus disabled");
+}
+settingsmenu();
+}
+if(ssm=="psn")
+{
+if(position_info==0)
+{
+position_info=1;
+speak("position info in menus enabled");
+}
+else
+{
+m.speak_position_information=false;
+position_info=0;
+speak("position info in menus disabled");
+}
+settingsmenu();
+}
+if(ssm=="psl")
+{
+if(side_scroll==0)
+{
+side_scroll=1;
+speak("side scrolling in menus enabled");
+}
+else
+{
+m.enable_side_scrolling=false;
+side_scroll=0;
+speak("side scrolling in menus disabled");
+}
+settingsmenu();
+}
+if(ssm=="rest")
+{
+setupmenu(true);
+m.wrap_sound="none.ogg";
+m.click_sound="sounds/misc/menu1.ogg";
+m.enter_sound="sounds/misc/menu2.ogg";
+m.open_sound="sounds/misc/menu3.ogg";
+m.add_item_tts("yes");
+m.add_item_tts("no");
+int mres=m.run("Are you sure you want to reset all of your settings?",true);
+if(mres==0)
+{
+speak("canceled");
+settingsmenu();
+}
+if(mres==1)
+{
+if(file_exists("data/options.dat")) file_delete("data/options.dat");
+speak("settings reset");
+resetpreffs();
+settingsmenu();
+}
+if(mres==2)
+{
+settingsmenu();
+}
+}
+if(ssm=="preffs")
+{
+speak("settings saved");
+writepreffs();
+settingsmenu();
+}
+if(ssm=="back")
+{
+mainmenu();
+}
+}
+void menusounds()
+{
+setupmenu(true);
+m.add_item_tts("click sound,"+"currently set to;"+clicksound, "mcs");
+m.add_item_tts("edge sound,"+"currently set to;"+edgesound, "mds");
+m.add_item_tts("enter sound,"+"currently set to;"+entersound, "mrs");
+m.add_item_tts("open sound,"+"currently set to;"+opensound, "mps");
+m.add_item_tts("wrap sound,"+"currently set to;"+wrapsound, "mws");
+m.add_item_tts("back", "back");
+int mres=m.run("Choose the sounds you would like to use in all menus.",true);
+string scm=m.get_item_name(mres);
+if(mres==0)
+{
+settingsmenu();
+}
+if(scm=="mcs")
+{
+string res=clicksmenu();
+if(res!="")
+{
+clicksound=res;
+}
+}
+if(scm=="mds")
+{
+string res=edgesmenu();
+if(res!="")
+{
+edgesound=res;
+}
+}
+if(scm=="mrs")
+{
+string res=entersmenu();
+if(res!="")
+{
+entersound=res;
+}
+}
+if(scm=="mps")
+{
+string res=opensmenu();
+if(res!="")
+{
+opensound=res;
+}
+}
+if(scm=="mws")
+{
+string res=wrapsmenu();
+if(res!="")
+{
+wrapsound=res;
+}
+}
+if(scm=="back")
+{
+settingsmenu();
+}
+}
+void gamemenu()
+{
+setupmenu(true);
+m.add_item_tts("load game", "lg");
+m.add_item_tts("new game", "ng");
+m.add_item_tts("settings", "set");
+m.add_item_tts("back", "back");
+int mres=m.run("Game menu",true);
+string gamem=m.get_item_name(mres);
+if(mres==0)
+{
+mainmenu();
+}
+if(gamem=="lg")
+{
+if(file_exists("data/game.dat"))
+{
+readdata();
+fighter();
+}
+else
+{
+dlg("Error. The data assosiated with this game does not exist.","sounds/misc/ui.ogg");
+gamemenu();
+}
+}
+if(gamem=="ng")
+{
+if(file_exists("data/game.dat"))
+{
+setupmenu(true);
+m.wrap_sound="none.ogg";
+m.click_sound="sounds/misc/menu1.ogg";
+m.enter_sound="sounds/misc/menu2.ogg";
+m.open_sound="sounds/misc/menu3.ogg";
+m.add_item_tts("yes");
+m.add_item_tts("no");
+int mres=m.run("Are you sure you want to start over from the beginning? This will erase all of the progress you made on the current game.",true);
+if(mres==0)
+{
+speak("canceled");
+gamemenu();
+}
+if(mres==1)
+{
+modemenu();
+}
+if(mres==2)
+{
+gamemenu();
+}
+}
+else
+{
+modemenu();
+}
+}
+if(gamem=="set")
+{
+gamepreffs();
+}
+if(gamem=="back")
+{
+mainmenu();
+}
+}
+void modemenu()
+{
+setupmenu(true);
+m.add_item_tts("normal", "nm");
+m.add_item_tts("custom", "cm");
+m.add_item_tts("back", "back");
+int mres=m.run("Choose a mode you would like to play on",true);
+string modem=m.get_item_name(mres);
+if(mres==0)
+{
+gamemenu();
+}
+if(modem=="nm")
+{
+normalmenu();
+}
+if(modem=="cm")
+{
+custommenu();
+}
+if(modem=="back")
+{
+gamemenu();
+}
+}
+void normalmenu()
+{
+setupmenu(true);
+m.add_item_tts("kill animals", "km");
+m.add_item_tts("kill enemies", "kn");
+m.add_item_tts("kill projectiles", "kp");
+m.add_item_tts("kill robots", "kb");
+m.add_item_tts("kill zombies", "kz");
+m.add_item_tts("back", "back");
+int mres=m.run("normal menu",true);
+string normem=m.get_item_name(mres);
+if(mres==0)
+{
+modemenu();
+}
+if(normem=="km")
+{
+gamemode=1;
+resetgame();
+fighter();
+}
+if(normem=="kn")
+{
+gamemode=2;
+resetgame();
+fighter();
+}
+if(normem=="kp")
+{
+gamemode=3;
+resetgame();
+fighter();
+}
+if(normem=="kb")
+{
+gamemode=4;
+resetgame();
+fighter();
+}
+if(normem=="kz")
+{
+gamemode=5;
+resetgame();
+fighter();
+}
+if(normem=="back")
+{
+modemenu();
+}
+}
+void custommenu()
+{
+setupmenu(true);
+m.add_item_tts("kill animals", "km");
+m.add_item_tts("kill enemies", "kn");
+m.add_item_tts("kill projectiles", "kp");
+m.add_item_tts("kill robots", "kb");
+m.add_item_tts("kill zombies", "kz");
+m.add_item_tts("back", "back");
+int mres=m.run("custom menu",true);
+string cusmem=m.get_item_name(mres);
+if(mres==0)
+{
+modemenu();
+}
+if(cusmem=="km")
+{
+string[] animaltype=find_directories("sounds/npc/animals/*");
+setupmenu(true);
+for(uint i=0; i<animaltype.length(); i++)
+{
+m.add_item_tts(animaltype[i],animaltype[i]);
+}
+int mres=m.run("Animals menu", true);
+if(mres==0)
+{
+custommenu();
+}
+if (mres==0 and mres>=animaltype.length())
+{
+gamemode=6;
+resetgame();
+fighter();
+}
+if (mres>0 and mres<=animaltype.length())
+{
+amtype=animaltype[mres-1];
+gamemode=6;
+resetgame();
+fighter();
+}
+}
+if(cusmem=="kn")
+{
+string[] enemytype=find_directories("sounds/npc/enemies/*");
+setupmenu(true);
+for(uint i=0; i<enemytype.length(); i++)
+{
+m.add_item_tts(enemytype[i],enemytype[i]);
+}
+int mres=m.run("enemies menu", true);
+if(mres==0)
+{
+custommenu();
+}
+if (mres==0 and mres>=enemytype.length())
+{
+gamemode=7;
+resetgame();
+fighter();
+}
+if (mres>0 and mres<=enemytype.length())
+{
+emtype=enemytype[mres-1];
+gamemode=7;
+resetgame();
+fighter();
+}
+}
+if(cusmem=="kp")
+{
+string[] projtype=find_directories("sounds/npc/projectiles/*");
+setupmenu(true);
+for(uint i=0; i<projtype.length(); i++)
+{
+m.add_item_tts(projtype[i],projtype[i]);
+}
+int mres=m.run("projectiles menu", true);
+if(mres==0)
+{
+custommenu();
+}
+if (mres==0 and mres>=projtype.length())
+{
+gamemode=8;
+resetgame();
+fighter();
+}
+if (mres>0 and mres<=projtype.length())
+{
+potype=projtype[mres-1];
+gamemode=8;
+resetgame();
+fighter();
+}
+}
+if(cusmem=="kb")
+{
+string[] robottype=find_directories("sounds/npc/robots/*");
+setupmenu(true);
+for(uint i=0; i<robottype.length(); i++)
+{
+m.add_item_tts(robottype[i],robottype[i]);
+}
+int mres=m.run("robots menu", true);
+if(mres==0)
+{
+custommenu();
+}
+if (mres==0 and mres>=robottype.length())
+{
+gamemode=9;
+resetgame();
+fighter();
+}
+if (mres>0 and mres<=robottype.length())
+{
+rotype=robottype[mres-1];
+gamemode=9;
+resetgame();
+fighter();
+}
+}
+if(cusmem=="kz")
+{
+string[] zombietype=find_directories("sounds/npc/zombies/*");
+setupmenu(true);
+for(uint i=0; i<zombietype.length(); i++)
+{
+m.add_item_tts(zombietype[i],zombietype[i]);
+}
+int mres=m.run("zombies menu", true);
+if(mres==0)
+{
+custommenu();
+}
+if (mres==0 and mres>=zombietype.length())
+{
+gamemode=10;
+resetgame();
+fighter();
+}
+if (mres>0 and mres<=zombietype.length())
+{
+zotype=zombietype[mres-1];
+gamemode=10;
+resetgame();
+fighter();
+}
+}
+if(cusmem=="back")
+{
+modemenu();
+}
+}
+void gamepreffs()
+{
+setupmenu(true);
+m.add_item_tts("reset data", "rg");
+m.add_item_tts("save data", "sg");
+m.add_item_tts("back", "back");
+int mres=m.run("Game options",true);
+string gamepm=m.get_item_name(mres);
+if(mres==0)
+{
+gamemenu();
+}
+if(gamepm=="rg")
+{
+setupmenu(true);
+m.wrap_sound="none.ogg";
+m.click_sound="sounds/misc/menu1.ogg";
+m.enter_sound="sounds/misc/menu2.ogg";
+m.open_sound="sounds/misc/menu3.ogg";
+m.add_item_tts("yes");
+m.add_item_tts("no");
+int mres=m.run("Are you sure you want to reset all of your saved data?",true);
+if(mres==0)
+{
+speak("canceled");
+gamepreffs();
+}
+if(mres==1)
+{
+if(file_exists("data/game.dat")) file_delete("data/game.dat");
+speak("game reset");
+resetgame();
+gamepreffs();
+}
+if(mres==2)
+{
+gamepreffs();
+}
+}
+if(gamepm=="sg")
+{
+speak("game saved");
+writedata();
+gamepreffs();
+}
+if(gamepm=="back")
+{
+gamemenu();
+}
+}

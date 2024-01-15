@@ -1,0 +1,41 @@
+turret@[] turrets(0);
+class turret
+{
+int tloopsound;
+int turx;
+int tury;
+int dammage;
+int firetime;
+string tloop;
+timer firetimer;
+turret(int tx,int ty,int dm,int ft,string tl)
+{
+turx=tx;
+tury=ty;
+dammage=dm;
+firetime=ft;
+tloop=tl;
+tloopsound=p.play_2d(tloop, me.x, me.y, turx, tury, true);
+}
+}
+void turretloop()
+{
+for (uint i=0; i<turrets.length(); i++)
+{
+if(turrets[i].firetimer.elapsed>=turrets[i].firetime)
+{
+p.play_2d("laser_pistol.ogg",me.x, me.y, turrets[i].turx, turrets[i].tury, false);
+spawn_projectile(turrets[i].turx-1,turrets[i].tury, turrets[i].dammage, 100, "bolder.wav", "bolderhit.wav");
+turrets[i].firetimer.restart();
+}
+}
+}
+void spawn_turret(int x, int y, int dm, int ft, string tloop)
+{
+turret t1(x,y,dm,ft,tloop);
+turrets.insert_last(t1);
+}
+void destroy_all_turrets()
+{
+turrets.resize(0);
+}
